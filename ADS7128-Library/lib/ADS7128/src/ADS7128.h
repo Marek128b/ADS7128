@@ -39,7 +39,7 @@ public:
     ADS7128(int address = 0b0010111);
     ADS7128(int address, uint8_t wire);
 
-    // begin the Wire with default settings 
+    // begin the Wire with default settings: I2C_SCL = GPIO22, I2C_SDA = GPIO21
     void begin();
 
     //begin the Wire using SDA, SCL and frequency

@@ -38,15 +38,13 @@ int16_t ADS7128::readADC()
 {
     int16_t output;
 
-    Wire.write((address << 1) + 1); // read from Address
-
-    Wire.requestFrom(address, 1);
-    if (Wire.available())
+    // Wire.write((address << 1) + 1); // read from Address
+    Wire.requestFrom(address, 2); // requesting two bytes from the I2C address
+    if (Wire.available() >= 2)
     {
-        byte data = Wire.read();
-        //Serial.print("Register value: ");
-        //Serial.println(data);
-        output += data;
+        output = Wire.read() << 8 | Wire.read();
+        Serial.print("Register value: ");
+        Serial.println(output);
     }
 
     return output;
