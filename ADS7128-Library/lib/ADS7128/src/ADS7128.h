@@ -9,26 +9,12 @@
 class ADS7128
 {
 private:
-#define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81,
+#define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81
 
 #define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
 
-#define RECENT_CH0_LSB_REGISTER 0xA0 // Lower 8 bits of the last conversion
-#define RECENT_CH0_MSB_REGISTER 0xA1 // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH1_LSB_REGISTER 0xA2 // Lower 8 bits of the last conversion
-#define RECENT_CH1_MSB_REGISTER 0xA3 // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH2_LSB_REGISTER 0xA4 // Lower 8 bits of the last conversion
-#define RECENT_CH2_MSB_REGISTER 0xA5 // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH3_LSB_REGISTER 0xA6 // Lower 8 bits of the last conversion
-#define RECENT_CH3_MSB_REGISTER 0xA7 // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH4_LSB_REGISTER 0xA8 // Lower 8 bits of the last conversion
-#define RECENT_CH4_MSB_REGISTER 0xA9 // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH5_LSB_REGISTER 0xAA // Lower 8 bits of the last conversion
-#define RECENT_CH5_MSB_REGISTER 0xAB // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH6_LSB_REGISTER 0xAC // Lower 8 bits of the last conversion
-#define RECENT_CH6_MSB_REGISTER 0xAD // MSB aligned first 8 bits of the last conversion
-#define RECENT_CH7_LSB_REGISTER 0xAE // Lower 8 bits of the last conversion
-#define RECENT_CH7_MSB_REGISTER 0xAF // MSB aligned first 8 bits of the last conversion
+#define PIN_CFG_REGISTER 0x05  // AIN/GPIO[7:0]  0b = Channel is configured as analog input. 1b = Channel is configured as GPIO. Default: 0x00
+#define GPIO_CFG_REGISTER 0x07 // Configure GPIO[7:0]  0b = GPIO is configured as digital input. 1b = GPIO is configured as digital output.
 
     // TwoWire wireBus; // set the wireBus object
     uint8_t wire; // Bus nr
@@ -61,9 +47,18 @@ public:
 
     // begin the Wire with default settings: I2C_SCL = GPIO22, I2C_SDA = GPIO21
     void begin();
-
     // begin the Wire using SDA, SCL and frequency
     void begin(int SDA, int SCL, int frequency);
+
+    // AIN/GPIO[7:0]  0b = analog input. 1b = GPIO. Default: 0x00
+    void configurePins(byte analogGPIO);
+    // reads Pin Config. AIN/GPIO[7:0]  0b = analog input. 1b = GPIO. Default: 0x00
+    byte readPinConfig();
+
+    // GPIO[7:0]  0b = digital input. 1b = digital output. Default: 0x00
+    void configureGPIO(byte GPIO);
+    // reads GPIO config. GPIO[7:0]  0b = digital input. 1b = digital output. Default: 0x00
+    byte readGPIOConfig();
 
     /*sets the ADC Number to read from
     0b = AIN0

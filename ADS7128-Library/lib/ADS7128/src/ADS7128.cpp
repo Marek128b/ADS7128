@@ -24,6 +24,60 @@ void ADS7128::begin(int SDA, int SCL, int frequency)
     Wire.begin(SDA, SCL, frequency);
 }
 
+void ADS7128::configurePins(byte analogGPIO)
+{
+    Wire.beginTransmission(address); // write to Address
+    Wire.write(0b00001000);          // writing data to I2C device address
+    Wire.write(PIN_CFG_REGISTER);    // register address
+    Wire.write(analogGPIO);          // register data
+    Wire.endTransmission();
+}
+
+byte ADS7128::readPinConfig()
+{
+    byte output;
+    Wire.beginTransmission(address); // write to Address
+    Wire.write(0b000010000);         // writing data to I2C device address
+    Wire.write(PIN_CFG_REGISTER);    // register address
+    Wire.endTransmission();
+
+    Wire.requestFrom(address, 1); // requesting two bytes from the I2C address
+    if (Wire.available())
+    {
+        output = Wire.read();
+        Serial.print("Register value: ");
+        Serial.println(output);
+    }
+    return output;
+}
+
+void ADS7128::configureGPIO(byte GPIO)
+{
+    Wire.beginTransmission(address); // write to Address
+    Wire.write(0b00001000);          // writing data to I2C device address
+    Wire.write(GPIO_CFG_REGISTER);   // register address
+    Wire.write(GPIO);                // register data
+    Wire.endTransmission();
+}
+
+byte ADS7128::readGPIOConfig()
+{
+    byte output;
+    Wire.beginTransmission(address); // write to Address
+    Wire.write(0b000010000);         // writing data to I2C device address
+    Wire.write(GPIO_CFG_REGISTER);   // register address
+    Wire.endTransmission();
+
+    Wire.requestFrom(address, 1); // requesting two bytes from the I2C address
+    if (Wire.available())
+    {
+        output = Wire.read();
+        Serial.print("Register value: ");
+        Serial.println(output);
+    }
+    return output;
+}
+
 void ADS7128::setAdcNr(byte nr)
 {
     this->adcNr = nr;
