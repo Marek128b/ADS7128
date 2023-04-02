@@ -4,12 +4,12 @@
 #ifndef __ADS7128__
 #define __ADS7128__
 
-//Datasheet TI: https://www.ti.com/lit/ds/symlink/ads7128.pdf?ts=1680180539961&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS7128%253FkeyMatch%253DADS7128IRTER%2526tisearch%253Dsearch-everything%2526usecase%253DOPN 
+// Datasheet TI: https://www.ti.com/lit/ds/symlink/ads7128.pdf?ts=1680180539961&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS7128%253FkeyMatch%253DADS7128IRTER%2526tisearch%253Dsearch-everything%2526usecase%253DOPN
 
 class ADS7128
 {
 private:
-#define SYSTEM_STATUS_REGISTER 0x00 //default: 0x81, 
+#define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81,
 
 #define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
 
@@ -30,19 +30,39 @@ private:
 #define RECENT_CH7_LSB_REGISTER 0xAE // Lower 8 bits of the last conversion
 #define RECENT_CH7_MSB_REGISTER 0xAF // MSB aligned first 8 bits of the last conversion
 
-    //TwoWire wireBus; // set the wireBus object
-    uint8_t wire;    // Bus nr
-    int address;     // 7Bit I2C Slave address
-    int adcNr;       // ADC0-7
+    // TwoWire wireBus; // set the wireBus object
+    uint8_t wire; // Bus nr
+    int address;  // 7Bit I2C Slave address
+    int adcNr;    // ADC0-7
 
 public:
+    /*
+    DECAP
+      |
+     R1
+      |--ADDR
+     R2
+      |
+    GND
+
+    |R1(1)   |R2(1)       |Address
+    |--------|------------|-------------------------|
+    |0 Ω     |DNP(2)      |0010111b (17h) //Default |
+    |11 kΩ   |DNP(2)      |0010110b (16h)           |
+    |33 kΩ   |DNP(2)      |0010101b (15h)           |
+    |100 kΩ  |DNP(2)      |0010100b (14h)           |
+    |DNP(2)  |DNP(2)      |0010000b (10h)           |
+    |DNP(2)  |11 kΩ       |0010001b (11h)           |
+    |DNP(2)  |33 kΩ       |0010010b (12h)           |
+    |DNP(2)  |100 kΩ      |0010011b (13h)           |
+    */
     ADS7128(int address = 0b0010111);
     ADS7128(int address, uint8_t wire);
 
     // begin the Wire with default settings: I2C_SCL = GPIO22, I2C_SDA = GPIO21
     void begin();
 
-    //begin the Wire using SDA, SCL and frequency
+    // begin the Wire using SDA, SCL and frequency
     void begin(int SDA, int SCL, int frequency);
 
     /*sets the ADC Number to read from
@@ -59,7 +79,7 @@ public:
     void setAdcNr(byte nr);
 
     /*read the data from the before selected Analog Input default AIN0
-     */ 
+     */
     int16_t readADC();
 };
 

@@ -27,7 +27,8 @@ void ADS7128::begin(int SDA, int SCL, int frequency)
 void ADS7128::setAdcNr(byte nr)
 {
     this->adcNr = nr;
-    Wire.write((address << 1) + 0);   // write to Address
+    // Wire.write((address << 1) + 0);   // write to Address
+    Wire.beginTransmission(address);  // write to Address
     Wire.write(0b00001000);           // writing data to I2C device address
     Wire.write(CHANNEL_SEL_REGISTER); // register address
     Wire.write(0b0000 + nr);          // register data
@@ -44,8 +45,8 @@ int16_t ADS7128::readADC()
     {
         output = Wire.read() << 8 | Wire.read();
         Serial.print("Register value: ");
-        Serial.println(output);
+        Serial.println(output >> 4);
     }
 
-    return output;
+    return (output >> 4);
 }
