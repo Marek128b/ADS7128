@@ -1,6 +1,11 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81
+
+#define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
+#define RECENT_CH2_LSB 0xA4
+
 //----------------------------------------------------------------Declarations----------------------------------------------------------------------------
 void scanningI2C();
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -14,34 +19,62 @@ void setup()
   // scanningI2C();
   Wire.begin();
 
+  // reading a Register
   Wire.beginTransmission(0x17);
-  Wire.write(0b00010000); // Send the register address to read from
-  Wire.write(0x00);
-  Serial.println(Wire.endTransmission(false));
-  /*
-  0: success.
-  1: data too long to fit in transmit buffer.
-  2: received NACK on transmit of address.
-  3: received NACK on transmit of data.
-  4: other error.
-  5: timeout
-  */
-
+  Wire.write(0b00010000);             // read Register
+  Wire.write(SYSTEM_STATUS_REGISTER); // Send the register address to read from
+  Wire.endTransmission(false);
   Wire.requestFrom(0x17, 1);
   if (Wire.available() >= 1)
   {
-    Serial.println("Wire is available");
-    byte data = Wire.read();   // Read the received data
+    byte data = Wire.read(); // Read the received data
     Serial.print("0x");
     Serial.println(data, HEX); // Display the data
   }
-  Serial.println(Wire.endTransmission()); // End the communication with the device
+  Wire.endTransmission(); // End the communication with the device
+  Serial.println("done read SYSTEM_STATUS");
+  Serial.println("----------------------------------------------------------------------------------------");
+
+  // Writing to a Register
+  Wire.beginTransmission(0x17);
+  Wire.write(0b00001000);           // write Register
+  Wire.write(CHANNEL_SEL_REGISTER); // Send the register address to write to
+  Wire.write(0b10);                 // AIN2
+  Wire.endTransmission();
+
+  // Reading from ADC
+  Wire.beginTransmission(0x17);
+  Wire.write(0x10);
+  Wire.endTransmission();
+  Wire.requestFrom(0x17, 2);
+  if (Wire.available() == 2)
+  {
+    int data = Wire.read(); // Read the received data
+    data = ((data << 8) + Wire.read()) >> 4;
+    Serial.println(data); // Display the data
+  }
+  Wire.endTransmission(); // End the communication with the device
+  Serial.println("done read ADC");
+  Serial.println("----------------------------------------------------------------------------------------");
 
   Serial.println("done setup");
 }
 
 void loop()
 {
+  // Reading from ADC
+  Wire.beginTransmission(0x17);
+  Wire.write(0x10);
+  Wire.endTransmission();
+  Wire.requestFrom(0x17, 2);
+  if (Wire.available() == 2)
+  {
+    int data = Wire.read(); // Read the received data
+    data = ((data << 8) + Wire.read()) >> 4;
+    Serial.println(data); // Display the data
+  }
+  Wire.endTransmission(); // End the communication with the device
+  delay(100);
 }
 
 //----------------------------------------------------------------Functions------------------------------------------------------------------------------
