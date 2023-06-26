@@ -1,10 +1,14 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+#include <ADS7128.h>
+
 #define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81
 
 #define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
 #define RECENT_CH2_LSB 0xA4
+
+ADS7128 ADC;
 
 //----------------------------------------------------------------Declarations----------------------------------------------------------------------------
 void scanningI2C();
@@ -16,65 +20,34 @@ void setup()
 
   Serial.println("start setup");
 
-  // scanningI2C();
-  Wire.begin();
+  ADC.begin();
 
-  // reading a Register
-  Wire.beginTransmission(0x17);
-  Wire.write(0b00010000);             // read Register
-  Wire.write(SYSTEM_STATUS_REGISTER); // Send the register address to read from
-  Wire.endTransmission(false);
-  Wire.requestFrom(0x17, 1);
-  if (Wire.available() >= 1)
-  {
-    byte data = Wire.read(); // Read the received data
-    Serial.print("0x");
-    Serial.println(data, HEX); // Display the data
-  }
-  Wire.endTransmission(); // End the communication with the device
-  Serial.println("done read SYSTEM_STATUS");
-  Serial.println("----------------------------------------------------------------------------------------");
+  Serial.print("SYSTEM_STATUS: 0b");
+  Serial.println(ADC.readSYSTEM_STATUS_REGISTER(), BIN);
+  Serial.print("SYSTEM_STATUS: 0x");
+  Serial.println(ADC.readSYSTEM_STATUS_REGISTER(), HEX);
 
-  // Writing to a Register
-  Wire.beginTransmission(0x17);
-  Wire.write(0b00001000);           // write Register
-  Wire.write(CHANNEL_SEL_REGISTER); // Send the register address to write to
-  Wire.write(0b10);                 // AIN2
-  Wire.endTransmission();
+  ADC.setAdcNr(0b10);
 
-  // Reading from ADC
-  Wire.beginTransmission(0x17);
-  Wire.write(0x10);
-  Wire.endTransmission();
-  Wire.requestFrom(0x17, 2);
-  if (Wire.available() == 2)
-  {
-    int data = Wire.read(); // Read the received data
-    data = ((data << 8) + Wire.read()) >> 4;
-    Serial.println(data); // Display the data
-  }
-  Wire.endTransmission(); // End the communication with the device
-  Serial.println("done read ADC");
-  Serial.println("----------------------------------------------------------------------------------------");
+  ADC.setOversamplingRatio(0b111);
+  Serial.print("Oversampling Ratio: 0b");
+  Serial.println(ADC.getOversamplingRatio(), BIN);
+  /*
+  ADC.setAppendID(0b1);
+  int id;
+  Serial.print("ADC data: 0x");
+  Serial.println(ADC.readADCandID(&id), HEX); //not working !!!!
+  Serial.print("ID: ");
+  Serial.printf("%d\r\n", id);
 
   Serial.println("done setup");
+  ADC.setAppendID(0b0);*/
 }
 
 void loop()
 {
-  // Reading from ADC
-  Wire.beginTransmission(0x17);
-  Wire.write(0x10);
-  Wire.endTransmission();
-  Wire.requestFrom(0x17, 2);
-  if (Wire.available() == 2)
-  {
-    int data = Wire.read(); // Read the received data
-    data = ((data << 8) + Wire.read()) >> 4;
-    Serial.println(data); // Display the data
-  }
-  Wire.endTransmission(); // End the communication with the device
-  delay(100);
+  Serial.println(ADC.readADC());
+  delay(200);
 }
 
 //----------------------------------------------------------------Functions------------------------------------------------------------------------------

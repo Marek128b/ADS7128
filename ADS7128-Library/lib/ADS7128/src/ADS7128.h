@@ -13,6 +13,9 @@ private:
 
 #define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
 
+#define DATA_CFG_REGISTER 0x02
+#define OSR_CFG_REGISTER 0x03
+
 #define PIN_CFG_REGISTER 0x05       // AIN/GPIO[7:0]  0b = Channel is configured as analog input. 1b = Channel is configured as GPIO. Default: 0x00
 #define GPIO_CFG_REGISTER 0x07      // Configure GPIO[7:0]  0b = GPIO is configured as digital input. 1b = GPIO is configured as digital output. Default: 0x00
 #define GPO_DRIVE_CFG_REGISTER 0x09 // Configure GPO[7:0] as open-drain or push-pull. 0b = output is open-drain. 1b = Pushpull driver is used for digital output. Default: 0x00
@@ -24,6 +27,7 @@ private:
 
   void startReadRegister(uint16_t registerAddress);
   void startWriteRegister(uint16_t registerAddress);
+
 public:
   /*
   DECAP
@@ -65,7 +69,7 @@ public:
 
   // GPO[7:0] as open-drain or push-pull. 0b = open-drain. 1b = Pushpull driver is used. Default: 0x00
   void configureGPODrive(byte GPO_Drive);
-  //reads GPO Drive register
+  // reads GPO Drive register
   byte readGPODriveConfig();
 
   /*sets the ADC Number to read from
@@ -84,6 +88,50 @@ public:
   /*read the data from the before selected Analog Input default AIN0
    */
   uint16_t readADC();
+
+  /*
+  returns ADC data and the channel ID when activated
+  */
+  uint16_t readADCandID(int *ID);
+
+  /*
+  Append 4-bit channel ID or status flags to output data.
+  0b = Channel ID and status flags are not appended to ADC data.
+  1b = 4-bit channel ID is appended to ADC data.
+  10b = 4-bit status flags are appended to ADC data.
+  11b = Reserved.
+  */
+  void setAppendID(byte type); // NOT WORKING
+
+  /*
+  returns the SYSTEM STATUS REGISTER
+  */
+  uint8_t readSYSTEM_STATUS_REGISTER();
+
+  /*
+  Selects the oversampling ratio for ADC conversion result.
+  0b = No averaging
+  1b = 2 samples
+  10b = 4 samples
+  11b = 8 samples
+  100b = 16 samples
+  101b = 32 samples
+  110b = 64 samples
+  111b = 128 samples
+  */
+  void setOversamplingRatio(byte ratio);
+  /*
+   Selects the oversampling ratio for ADC conversion result.
+   0b = No averaging
+   1b = 2 samples
+   10b = 4 samples
+   11b = 8 samples
+   100b = 16 samples
+   101b = 32 samples
+   110b = 64 samples
+   111b = 128 samples
+   */
+  byte getOversamplingRatio();
 };
 
 #endif
