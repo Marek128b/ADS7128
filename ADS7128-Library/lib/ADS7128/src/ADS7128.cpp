@@ -196,3 +196,39 @@ byte ADS7128::getOversamplingRatio()
     Wire.endTransmission(); // End the communication with the device
     return data;
 }
+
+byte ADS7128::getRegisterData(uint8_t id)
+{
+    byte data;
+    Wire.beginTransmission(0x17);
+    Wire.write(0b00010000); // read Register
+    Wire.write(id);         // Send the register address to read from
+    Wire.endTransmission(false);
+    Wire.requestFrom(0x17, 1);
+    if (Wire.available() >= 1)
+    {
+        data = Wire.read(); // Read the received data
+    }
+    Wire.endTransmission(); // End the communication with the device
+    return data;
+}
+
+float ADS7128::getVoltage()
+{
+    return MAX_INPUT_VOLTAGE / (pow(2, 12) - 1) * readADC(); // returns a float that represents a input voltage to the set ADC Input
+}
+
+float ADS7128::getVoltage(uint16_t in)
+{
+    return MAX_INPUT_VOLTAGE / (pow(2, 12) - 1) * in;
+}
+
+void ADS7128::setMAX_INPUT_VOLTAGE(float in)
+{
+    this->MAX_INPUT_VOLTAGE = in;
+}
+
+float ADS7128::getMAX_INPUT_VOLTAGE()
+{
+    return MAX_INPUT_VOLTAGE;
+}

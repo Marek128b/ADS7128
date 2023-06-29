@@ -9,6 +9,15 @@
 class ADS7128
 {
 private:
+  float MAX_INPUT_VOLTAGE = 3.3;
+
+  int address; // 7Bit I2C Slave address
+  int adcNr;   // ADC0-7
+
+  void startReadRegister(uint16_t registerAddress);
+  void startWriteRegister(uint16_t registerAddress);
+
+public:
 #define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81
 
 #define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
@@ -20,15 +29,6 @@ private:
 #define GPIO_CFG_REGISTER 0x07      // Configure GPIO[7:0]  0b = GPIO is configured as digital input. 1b = GPIO is configured as digital output. Default: 0x00
 #define GPO_DRIVE_CFG_REGISTER 0x09 // Configure GPO[7:0] as open-drain or push-pull. 0b = output is open-drain. 1b = Pushpull driver is used for digital output. Default: 0x00
 
-  // TwoWire wireBus; // set the wireBus object
-  uint8_t wire; // Bus nr
-  int address;  // 7Bit I2C Slave address
-  int adcNr;    // ADC0-7
-
-  void startReadRegister(uint16_t registerAddress);
-  void startWriteRegister(uint16_t registerAddress);
-
-public:
   /*
   DECAP
     |
@@ -132,6 +132,18 @@ public:
    111b = 128 samples
    */
   byte getOversamplingRatio();
+
+  // reads one byte of a requested register
+  byte getRegisterData(uint8_t id);
+
+  // returns the Voltage that is set on a Analog Input
+  float getVoltage();
+  // returns the Voltage that  set on a Analog Input
+  float getVoltage(uint16_t in);
+
+  //set and read the MAX_INPUT_VOLTAGE
+  void setMAX_INPUT_VOLTAGE(float in);
+  float getMAX_INPUT_VOLTAGE();
 };
 
 #endif
