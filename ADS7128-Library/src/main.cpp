@@ -3,12 +3,7 @@
 
 #include <ADS7128.h>
 
-#define SYSTEM_STATUS_REGISTER 0x00 // default: 0x81
-
-#define CHANNEL_SEL_REGISTER 0x11 // ADC channel select register nr
-#define RECENT_CH2_LSB 0xA4
-
-ADS7128 ADC;
+ADS7128 ADC; // ADS7128 Object
 
 //----------------------------------------------------------------Declarations----------------------------------------------------------------------------
 void scanningI2C();
@@ -46,8 +41,18 @@ void setup()
 
 void loop()
 {
-  Serial.println(ADC.readADC());
-  delay(200);
+
+  for (byte i = 0; i < 8; i++) //loop through all ADCs
+  {
+    ADC.setAdcNr(i); //set the ADC number to read from 
+    uint16_t in;
+    Serial.printf("ADC%d: ", i);
+    Serial.print(in = ADC.readADC()); //read the ADC value and store it in a uint16_t variable 
+    Serial.print(" -> Voltage: ");
+    Serial.println(ADC.getVoltage(in)); //convert the ADC value to a voltage if the Maximum Input Voltage is 3V3
+  }
+
+  delay(2000);
 }
 
 //----------------------------------------------------------------Functions------------------------------------------------------------------------------
@@ -69,13 +74,7 @@ void scanningI2C()
       if (address < 16)
         Serial.print("0");
       Serial.println(address, HEX);
-    } /*else{
-       Serial.print("Error at address 0x");
-       if (address < 16)
-         Serial.print("0");
-       Serial.println(address, HEX);
-     }*/
+    }
   }
-
   Serial.println("Scanning complete");
 }
