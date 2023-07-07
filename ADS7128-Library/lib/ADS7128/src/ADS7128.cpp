@@ -159,11 +159,11 @@ void ADS7128::setAppendID(byte type) // NOT WORKING!!!
 uint8_t ADS7128::readSYSTEM_STATUS_REGISTER()
 {
     byte data;
-    Wire.beginTransmission(0x17);
+    Wire.beginTransmission(address);
     Wire.write(0b00010000);             // read Register
     Wire.write(SYSTEM_STATUS_REGISTER); // Send the register address to read from
     Wire.endTransmission(false);
-    Wire.requestFrom(0x17, 1);
+    Wire.requestFrom(address, 1);
     if (Wire.available() >= 1)
     {
         data = Wire.read(); // Read the received data
@@ -184,11 +184,11 @@ void ADS7128::setOversamplingRatio(byte ratio)
 byte ADS7128::getOversamplingRatio()
 {
     byte data;
-    Wire.beginTransmission(0x17);
+    Wire.beginTransmission(address);
     Wire.write(0b00010000);       // read Register
     Wire.write(OSR_CFG_REGISTER); // Send the register address to read from
     Wire.endTransmission(false);
-    Wire.requestFrom(0x17, 1);
+    Wire.requestFrom(address, 1);
     if (Wire.available() >= 1)
     {
         data = Wire.read(); // Read the received data
@@ -197,20 +197,30 @@ byte ADS7128::getOversamplingRatio()
     return data;
 }
 
-byte ADS7128::getRegisterData(uint8_t id)
+byte ADS7128::getRegisterData(byte id)
 {
     byte data;
-    Wire.beginTransmission(0x17);
+    Wire.beginTransmission(address);
     Wire.write(0b00010000); // read Register
     Wire.write(id);         // Send the register address to read from
     Wire.endTransmission(false);
-    Wire.requestFrom(0x17, 1);
+    Wire.requestFrom(address, 1);
     if (Wire.available() >= 1)
     {
         data = Wire.read(); // Read the received data
     }
     Wire.endTransmission(); // End the communication with the device
     return data;
+}
+
+void ADS7128::setRegisterData(byte id, byte data)
+{
+    Wire.beginTransmission(address); // write to Address
+    Wire.write(0b00001000);          // writing data to I2C device address
+    Wire.write(id);                  // register address
+    Wire.write(data);                // register data
+    Wire.endTransmission();
+    Wire.beginTransmission(address);
 }
 
 float ADS7128::getVoltage()

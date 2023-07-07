@@ -42,16 +42,16 @@ void setup()
 void loop()
 {
 
-  for (byte i = 0; i < 8; i++) //loop through all ADCs
+  for (byte i = 0; i <= 7; i++) // loop through all ADCs
   {
-    ADC.setAdcNr(i); //set the ADC number to read from 
+    ADC.setAdcNr(i); // set the ADC number to read from
     uint16_t in;
     Serial.printf("ADC%d: ", i);
-    Serial.print(in = ADC.readADC()); //read the ADC value and store it in a uint16_t variable 
+    Serial.print(in = ADC.readADC()); // read the ADC value and store it in a uint16_t variable
     Serial.print(" -> Voltage: ");
-    Serial.println(ADC.getVoltage(in)); //convert the ADC value to a voltage if the Maximum Input Voltage is 3V3
+    Serial.println(ADC.getVoltage(in)); // convert the ADC value to a voltage if the Maximum Input Voltage is 3V3
   }
-
+  Serial.println("-------------------------------------------------------------------------------------------------------------------------");
   delay(2000);
 }
 

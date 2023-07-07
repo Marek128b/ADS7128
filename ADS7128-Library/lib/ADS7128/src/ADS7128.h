@@ -134,14 +134,16 @@ public:
   byte getOversamplingRatio();
 
   // reads one byte of a requested register
-  byte getRegisterData(uint8_t id);
+  byte getRegisterData(byte id);
+  // writes one byte to the selected register
+  void setRegisterData(byte id, byte data);
 
   // returns the Voltage that is set on a Analog Input
   float getVoltage();
   // returns the Voltage that  set on a Analog Input
   float getVoltage(uint16_t in);
 
-  //set and read the MAX_INPUT_VOLTAGE
+  // set and read the MAX_INPUT_VOLTAGE
   void setMAX_INPUT_VOLTAGE(float in);
   float getMAX_INPUT_VOLTAGE();
 };
